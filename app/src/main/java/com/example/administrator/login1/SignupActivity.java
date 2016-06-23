@@ -1,8 +1,8 @@
 package com.example.administrator.login1;
 
 import android.app.ProgressDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,8 +21,10 @@ public class SignupActivity extends AppCompatActivity {
 
     @InjectView(R.id.input_name)
     EditText _nameText;
-    @InjectView(R.id.input_email) EditText _emailText;
-    @InjectView(R.id.input_password) EditText _passwordText;
+    @InjectView(R.id.input_email)
+    EditText _emailText;
+    @InjectView(R.id.input_password)
+    EditText _passwordText;
     @InjectView(R.id.btn_signup)
     Button _signupButton;
     @InjectView(R.id.link_login)
@@ -56,10 +58,10 @@ public class SignupActivity extends AppCompatActivity {
     public void signup() {
         Log.d(TAG, "Signup");
 
-     //   if (!validate()) {
-         //   onSignupFailed();
-          /// return;
-      //  }
+        //   if (!validate()) {
+        //   onSignupFailed();
+        /// return;
+        //  }
 
         _signupButton.setEnabled(false);
 

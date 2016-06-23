@@ -2,7 +2,9 @@ package com.example.administrator.login1;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
@@ -22,10 +24,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = DatabaseHelper.class.getName();
 
     // Database Version
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 30;
 
     // Database Name
-    private static final String DATABASE_NAME = "user_manager.db";
+    private static final String DATABASE_NAME = "test1.db";
 
     // Table Names
     private static final String TABLE_USER = "user";
@@ -41,23 +43,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     private static final String CREATE_TABLE_User = "CREATE TABLE "
-           + TABLE_USER + "(" + KEY_ID + " INTEGER PRIMARY KEY," + User_Name
-            + " TEXT," + User_Email + " Text," + User_Pass + " Text,"  +KEY_CREATED_AT
+            + TABLE_USER + "(" + KEY_ID + " INTEGER PRIMARY KEY," + User_Name
+            + " TEXT," + User_Email + " Text," + User_Pass + " Text," + KEY_CREATED_AT
             + " DATETIME" + ")";
 
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
+    private SQLiteDatabase database;
+    public DatabaseHelper( final Context context) {
+        super(new DatabaseContext(context),DATABASE_NAME,null, DATABASE_VERSION);
 
         //  String ROOT_DIR = context.getA getAbsolutePath();
-       String s=context.getDatabasePath(DATABASE_NAME).getPath();
+        //String s = context.getDatabasePath(DATABASE_NAME).getPath();
+
+      //  database=SQLiteDatabase.openOrCreateDatabase("/sdcard/"+DATABASE_NAME,null);
+        //onCreate(database);
+       // onCreate()
     }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
 
         // creating required tables
-        db.execSQL(CREATE_TABLE_User);
+
+        try
+        {
+            db.execSQL(CREATE_TABLE_User);
+        }
+         catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -72,23 +86,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public User getUser(String email, String pass) {
 
-       // SQLiteDatabase  db= SQLiteDatabase.openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null );
+        // SQLiteDatabase  db= SQLiteDatabase.openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null );
         SQLiteDatabase db = this.getReadableDatabase();
 
         String[] projection = {
                 KEY_ID,
                 User_Email,
                 User_Pass,
-                KEY_CREATED_AT        };
+                KEY_CREATED_AT};
 
 
-
-        Cursor c=db.query(
+        Cursor c = db.query(
                 TABLE_USER
-                ,projection
+                , projection
                 , User_Email + "=? and " + User_Pass + "=?"
-                , new String[]{String.valueOf(email),String.valueOf(pass)}
-                , null, null, null,null);
+                , new String[]{String.valueOf(email), String.valueOf(pass)}
+                , null, null, null, null);
 
 
         if (c.moveToFirst()) {
@@ -108,24 +121,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
- public long addUser(String email,String name,String pass)
- {
+    public long addUser(String email, String name, String pass) {
 
-     SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
 
-     ContentValues values = new ContentValues();
-     values.put(User_Email, email);
-     values.put(User_Name, name);
-     values.put(User_Pass, pass);
-     values.put(KEY_CREATED_AT, getDateTime());
+        ContentValues values = new ContentValues();
+        values.put(User_Email, email);
+        values.put(User_Name, name);
+        values.put(User_Pass, pass);
+        values.put(KEY_CREATED_AT, getDateTime());
 
-     // insert row
-     long user_id = db.insert(TABLE_USER, null, values);
+        // insert row
+        long user_id = db.insert(TABLE_USER, null, values);
 
-     return user_id;
+        return user_id;
 
 
- }
+    }
 
 
     // closing database
@@ -141,6 +153,61 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+}
+
+
+
+
+class DatabaseContext extends ContextWrapper {
+
+    private static final String DEBUG_CONTEXT = "DatabaseContext";
+
+    public DatabaseContext(Context base) {
+        super(base);
+
+        openOrCreateDatabase("test",base.MODE_PRIVATE ,null);
+    }
+
+    @Override
+    public File getDatabasePath(String name)
+    {
+        File sdcard = Environment.getExternalStorageDirectory();
+        String dbfile = sdcard.getAbsolutePath() + File.separator+ "databases" + File.separator + name;
+
+        if (!dbfile.endsWith(".db"))
+        {
+            dbfile += ".db" ;
+        }
+
+        File result = new File(dbfile);
+
+        if (!result.getParentFile().exists())
+        {
+            result.getParentFile().mkdirs();
+        }
+
+        if (Log.isLoggable(DEBUG_CONTEXT, Log.WARN))
+        {
+            Log.w(DEBUG_CONTEXT,
+                    "getDatabasePath(" + name + ") = " + result.getAbsolutePath());
+        }
+
+        return result;
+    }
+
+    @Override
+    public SQLiteDatabase openOrCreateDatabase(String name, int mode, SQLiteDatabase.CursorFactory factory)
+    {
+        SQLiteDatabase result = SQLiteDatabase.openOrCreateDatabase(getDatabasePath(name), null);
+         // SQLiteDatabase result = super.openOrCreateDatabase(name, mode, factory);
+        if (Log.isLoggable(DEBUG_CONTEXT, Log.WARN))
+        {
+            Log.w(DEBUG_CONTEXT,
+                    "openOrCreateDatabase(" + name + ",,) = " + result.getPath());
+        }
+        return result;
     }
 
 }

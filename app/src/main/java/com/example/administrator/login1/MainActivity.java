@@ -3,8 +3,8 @@ package com.example.administrator.login1;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.SQLException;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,8 +14,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -24,14 +22,16 @@ public class MainActivity extends AppCompatActivity {
 
 
     // Database Helper
-    DatabaseHelper db;
+   // DatabaseHelper db;
+     DBHelper db;
 
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
     @InjectView(R.id.input_email)
     EditText _emailText;
-    @InjectView(R.id.input_password) EditText _passwordText;
+    @InjectView(R.id.input_password)
+    EditText _passwordText;
     @InjectView(R.id.btn_login)
     Button _loginButton;
     @InjectView(R.id.link_signup)
@@ -67,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
     public void login() {
         Log.d(TAG, "Login");
 
-       // if (!validate()) {
-         //   onLoginFailed();
-           // return;
+        // if (!validate()) {
+        //   onLoginFailed();
+        // return;
         //}
 
         _loginButton.setEnabled(false);
@@ -85,16 +85,18 @@ public class MainActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        User user=null;
+        User user = null;
 
         try {
 
-            db=new DatabaseHelper (this.getApplicationContext());
-            user=db.getUser("aaa","ccc");
+           // db = new DatabaseHelper(this.getApplicationContext());
 
-          //  long i=db.addUser("aaa","bbb","ccc");
+            db=new DBHelper();
+            user = db.getUser("aaa", "ccc");
 
-            db.closeDB();
+            //  long i=db.addUser("aaa","bbb","ccc");
+
+            db.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO: Implement your own authentication logic here.
 
-        if (user!=null) {
+        if (user != null) {
 
             new android.os.Handler().postDelayed(
                     new Runnable() {
@@ -112,9 +114,7 @@ public class MainActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                         }
                     }, 3000);
-        }
-        else
-        {
+        } else {
             new android.os.Handler().postDelayed(
                     new Runnable() {
                         public void run() {
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
-     
+
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
         finish();
