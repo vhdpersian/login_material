@@ -17,6 +17,8 @@ import butterknife.InjectView;
 
 public class SignupActivity extends AppCompatActivity {
 
+    DatabaseHelper db;
+
     private static final String TAG = "SignupActivity";
 
     @InjectView(R.id.input_name)
@@ -58,10 +60,10 @@ public class SignupActivity extends AppCompatActivity {
     public void signup() {
         Log.d(TAG, "Signup");
 
-        //   if (!validate()) {
-        //   onSignupFailed();
-        /// return;
-        //  }
+           if (!validate()) {
+           onSignupFailed();
+         return;
+          }
 
         _signupButton.setEnabled(false);
 
@@ -75,18 +77,35 @@ public class SignupActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
+        db = new DatabaseHelper(this.getApplicationContext());
+        long user_id= db.addUser(email,name,password);
+        db.closeDB();
         // TODO: Implement your own signup logic here.
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+        if (user_id!=0) {
+            new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run() {
+                            // On complete call either onSignupSuccess or onSignupFailed
+                            // depending on success
+                            onSignupSuccess();
+                            progressDialog.dismiss();
+                        }
+                    }, 3000);
+        }
+        else
+        {
+            new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run() {
+                            // On complete call either onSignupSuccess or onSignupFailed
+                            // depending on success
+                            onSignupFailed();
+                            progressDialog.dismiss();
+                        }
+                    }, 3000);
+
+        }
     }
 
 
@@ -97,7 +116,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
     }

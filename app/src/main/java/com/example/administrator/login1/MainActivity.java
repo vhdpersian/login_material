@@ -21,9 +21,8 @@ import butterknife.InjectView;
 public class MainActivity extends AppCompatActivity {
 
 
-    // Database Helper
-   // DatabaseHelper db;
-     DBHelper db;
+
+    DatabaseHelper db;
 
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
@@ -67,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
     public void login() {
         Log.d(TAG, "Login");
 
-        // if (!validate()) {
-        //   onLoginFailed();
-        // return;
-        //}
+         if (!validate()) {
+           onLoginFailed();
+         return;
+        }
 
         _loginButton.setEnabled(false);
 
@@ -89,14 +88,12 @@ public class MainActivity extends AppCompatActivity {
 
         try {
 
-           // db = new DatabaseHelper(this.getApplicationContext());
+            db = new DatabaseHelper(this.getApplicationContext());
 
-            db=new DBHelper();
-            user = db.getUser("aaa", "ccc");
+            user = db.getUser(email, password);
 
-            //  long i=db.addUser("aaa","bbb","ccc");
 
-            db.close();
+            db.closeDB();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -147,7 +144,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        finish();
+
+       Intent intent = new Intent(MainActivity.this, MusicActivity.class);
+       //setContentView(R.layout.activity_music);
+        MainActivity.this.startActivity(intent);
+
+       // Toast.makeText(getBaseContext(), "Login success", Toast.LENGTH_LONG).show();
+        //finish();
     }
 
     public void onLoginFailed() {

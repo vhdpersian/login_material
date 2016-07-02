@@ -20,6 +20,8 @@ import java.util.Locale;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    User user=null;
+
     // Logcat tag
     private static final String LOG = DatabaseHelper.class.getName();
 
@@ -86,11 +88,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public User getUser(String email, String pass) {
 
-        // SQLiteDatabase  db= SQLiteDatabase.openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null );
+         user = new User();
+
         SQLiteDatabase db = this.getReadableDatabase();
 
         String[] projection = {
                 KEY_ID,
+                User_Name,
                 User_Email,
                 User_Pass,
                 KEY_CREATED_AT};
@@ -106,19 +110,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (c.moveToFirst()) {
 
-            User user = new User();
+
             user.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-            user.setName(c.getString(c.getColumnIndex(User_Name)));
-            user.setEmail(c.getString(c.getColumnIndex(User_Name)));
-            user.setPass(c.getString(c.getColumnIndex(User_Pass)));
             user.setCreated_at(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+            user.setName(c.getString(c.getColumnIndex(User_Name)));
+            user.setEmail(c.getString(c.getColumnIndex(User_Email)));
+            user.setPass(c.getString(c.getColumnIndex(User_Pass)));
 
-            return user;
 
-        } else {
-            return null;
         }
 
+        return user;
     }
 
     public long addUser(String email, String name, String pass) {
