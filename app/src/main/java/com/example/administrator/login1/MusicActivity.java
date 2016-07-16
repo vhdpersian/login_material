@@ -31,10 +31,10 @@ public class MusicActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
-       // Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-       // setSupportActionBar(toolbar);
 
-       // initCollapsingToolbar();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        initCollapsingToolbar();
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
